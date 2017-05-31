@@ -1,0 +1,36 @@
+/*
+  this time to learn how to subscribe that speed value to our robot
+ */
+#include "ros/ros.h"
+#include "std_msgs/String.h"
+#include "std_msgs/Float32.h"
+#include "geometry_msgs/Vector3.h"
+#include "sensor_msgs/Imu.h"
+
+void chatterCallback(const std_msgs::String::ConstPtr& msg) {
+  ROS_INFO("I heard: [%s]", msg->data.c_str());
+}
+void chatterCallback_float(std_msgs::Float32 msg) {
+  ROS_INFO("I heard: [%f]", msg.data);
+}
+float x,y,z;
+void subscribe_android_imu(const sensor_msgs::Imu::ConstPtr &imu){
+  ROS_INFO("get data imu x=[%.2f], y=[%.2f], z=[%.2f]", imu->linear_acceleration.x, imu->linear_acceleration.y, imu->linear_acceleration.z);
+  std::cout <<"okkk"  << "\n";
+  x = imu->linear_acceleration.x;
+  y = imu->linear_acceleration.y;
+  z = imu->linear_acceleration.z;
+}
+
+
+int main(int argc, char **argv) {
+  ros::init(argc, argv, "listener");
+  ros::NodeHandle n;
+  ros::Subscriber sub = n.subscribe("chatter_string", 1000, chatterCallback);
+  ros::Subscriber sub_float = n.subscribe("speed", 1000, chatterCallback_float);
+  ros::Subscriber sub_android_imu = n.subscribe<sensor_msgs::Imu>("/android/imu", 1, subscribe_android_imu);
+
+  ros::spin();
+
+  return 0;
+}
